@@ -1,0 +1,16 @@
+.directory
+# Build output and generated CMake artifacts
+**/build/
+build/
+bin/
+*.o
+*.obj
+*.a
+*.so
+*.out
+
+# Desktop / File manager metadata
+.directory
+
+# VS Code personal settings (optional, recommended)
+.vscode/
