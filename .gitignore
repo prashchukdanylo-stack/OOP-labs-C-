@@ -1,4 +1,3 @@
-.directory
 # Build output and generated CMake artifacts
 **/build/
 build/
