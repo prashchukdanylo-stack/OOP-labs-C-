@@ -25,9 +25,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     QAction *action4 = menuObjects->addAction("Еліпс");
     QMenu *menuInfo = menu->addMenu("&Довідка");
     QAction *infoAction = menuInfo->addAction("довідкова інформація");
-    QObject::connect(infoAction, &QAction::triggered, this, [this](){
-        QMessageBox::information(this, "Довідка","Лабораторна робота №2 «Розробка графічного редактора об’єктів».<br>Базовий графічний редактор<br>Варіант: 16<br>Автор: Пращук Данило Павлович ІМ-52");
-    });
+    QObject::connect(infoAction, &QAction::triggered, this, [this]()
+                     { QMessageBox::information(this, "Довідка", "Лабораторна робота №2 «Розробка графічного редактора об’єктів».<br>Базовий графічний редактор<br>Варіант: 16<br>Автор: Пращук Данило Павлович ІМ-52"); });
     shapeGroup = new QActionGroup(this);
     shapeGroup->setExclusive(true);
 
@@ -62,6 +61,22 @@ MainWindow::~MainWindow()
     }
 }
 
+void MainWindow::redrawCanvas()
+{
+    pixmap.fill(Qt::white);
+    QPainter painter(&pixmap);
+    int menuHeight = menuBar()->height();
+    painter.setClipRect(0, menuHeight, width(), height() - menuHeight);
+    for (int i = 0; i < shapeCount; i++)
+    {
+        if (pcshape[i])
+        {
+            pcshape[i]->show(painter);
+        }
+    }
+    update();
+}
+
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     if (event->pos().y() < menuBar()->height())
@@ -76,13 +91,13 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
         endPt = event->pos();
         isDragging = true;
 
-        if (dynamic_cast<PointShape*>(currentShape))
+        if (dynamic_cast<PointShape *>(currentShape))
         {
             pcshape[shapeCount] = currentShape->clone();
             pcshape[shapeCount]->set(event->pos().x(), event->pos().y(), event->pos().x(), event->pos().y());
             shapeCount++;
             isDragging = false;
-            update();
+            redrawCanvas();
         }
     }
 }
@@ -96,6 +111,15 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
     }
 }
 
+
+
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    QMainWindow::resizeEvent(event);
+    pixmap = QPixmap(size());
+    redrawCanvas();
+}
+
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton && isDragging)
@@ -103,13 +127,13 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
         isDragging = false;
         endPt = event->pos();
 
-        if (currentShape && shapeCount < N) {
+        if (currentShape && shapeCount < N)
+        {
             pcshape[shapeCount] = currentShape->clone();
             pcshape[shapeCount]->set(startPt.x(), startPt.y(), endPt.x(), endPt.y());
             shapeCount++;
-            update();
+            redrawCanvas();
         }
-      
     }
 }
 
@@ -117,18 +141,11 @@ void MainWindow::paintEvent(QPaintEvent *event)
 {
     QMainWindow::paintEvent(event);
     QPainter painter(this);
-    int menuHeght = menuBar()->height();
-
-    QRect drawingArea(0, menuHeght, width(), height() - menuHeght);
+    int menuHeight = menuBar()->height();
+    QRect drawingArea(0, menuHeight, width(), height() - menuHeight);
     painter.setClipRect(drawingArea);
 
-    for (int i = 0; i < shapeCount; i++)
-    {
-        if (pcshape[i])
-        {
-            pcshape[i]->show(painter);
-        }
-    }
+    painter.drawPixmap(0, 0, pixmap);
 
     if (isDragging && currentShape)
     {

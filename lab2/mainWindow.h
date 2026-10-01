@@ -4,6 +4,9 @@
 
 #include <QMainWindow>
 #include <QActionGroup>
+#include <QPixmap>
+#include <QResizeEvent>
+
 #include "shape.h"
 
 class QPaintEvent;
@@ -22,7 +25,8 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
- 
+    void redrawCanvas();
+    void resizeEvent(QResizeEvent *event) override;
 private: 
  bool isDragging = false;
  QPoint startPt;
@@ -33,6 +37,8 @@ private:
  Shape* currentShape = nullptr;
  Shape *pcshape[N] = {nullptr};
  int shapeCount = 0;
+ QPixmap pixmap;
+ 
 };
 
 #endif
