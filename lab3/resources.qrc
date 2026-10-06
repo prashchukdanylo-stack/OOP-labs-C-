@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file alias="point.png">icons/point.png</file>
+        <file alias="line.png">icons/line.png</file>
+        <file alias="rectangle.png">icons/rectangle.png</file>
+        <file alias="ellipse.png">icons/ellipse.png</file>
+    </qresource>
+</RCC>
