@@ -21,14 +21,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     toolBar = addToolBar("Панель фігур");
     toolBar->setMovable(false);
-
     QActionGroup *shapeGroup = new QActionGroup(this);
     shapeGroup->setExclusive(true);
-
     QAction *toolbarPoint = new QAction(QIcon(":icons/point.png"), "Крапка", this);
     toolbarPoint->setCheckable(true);
     toolbarPoint->setToolTip("Інструмент: Крапка");
-
     QAction *toolbarLine = new QAction(QIcon(":icons/line.png"), "Лінія", this);
     toolbarLine->setCheckable(true);
     toolbarLine->setToolTip("Інструмент: Лінія");
