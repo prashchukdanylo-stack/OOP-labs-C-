@@ -1,4 +1,3 @@
-
 #include "shape.h"
 #include <cmath>
 #include <QPen>
@@ -20,24 +19,24 @@ void Shape::rubber(QPainter &painter)
     painter.setBrush(Qt::NoBrush);
 }
 
+// --- PointShape ---
 void PointShape::show(QPainter &painter)
 {   
-    if (isSelected) {
-        painter.setPen(QPen(Qt::blue, 6, Qt::SolidLine, Qt::RoundCap));
-    } else {
-        painter.setPen(QPen(Qt::black, 6, Qt::SolidLine, Qt::RoundCap));
-    }
+    QPen pen(isSelected ? Qt::blue : Qt::black, 6, Qt::SolidLine, Qt::RoundCap);
+    painter.setPen(pen);
     painter.drawPoint(xs1, ys1);
 }
+
 Shape *PointShape::clone() const { return new PointShape(*this); }
+
 QString PointShape::getCoordinates() const {
     return QString("x: %1, y: %2").arg(xs1).arg(ys1);
 }
 
-
 QString PointShape::getInfo() const {
     return QString("Point %1 %2").arg(xs1).arg(ys1);
 }
+
 void PointShape::createFromInfo(const QString& info) {
     QStringList parts = info.split(" ");
     if (parts.size() == 3 && parts[0] == "Point") {
@@ -46,20 +45,20 @@ void PointShape::createFromInfo(const QString& info) {
     }
 }
 
+// --- LineShape ---
 void LineShape::show(QPainter &painter)
 {
-    if (isSelected) {
-        painter.setPen(QPen(Qt::blue, 2, Qt::SolidLine));
-    } else {
-        painter.setPen(QPen(Qt::black, 2, Qt::SolidLine));
-    }
+    QPen pen(isSelected ? Qt::blue : Qt::black, 2, Qt::SolidLine);
+    painter.setPen(pen);
     painter.drawLine(xs1, ys1, xs2, ys2);
 }
+
 void LineShape::rubber(QPainter &painter)
 {
-    painter.setPen(QPen(Qt::red, 1, Qt::DashLine));
+    Shape::rubber(painter);
     painter.drawLine(xs1, ys1, xs2, ys2);
 }
+
 Shape *LineShape::clone() const { return new LineShape(*this); }
 
 QString LineShape::getCoordinates() const {
@@ -69,6 +68,7 @@ QString LineShape::getCoordinates() const {
 QString LineShape::getInfo() const {
     return QString("Line %1 %2 %3 %4").arg(xs1).arg(ys1).arg(xs2).arg(ys2);
 }
+
 void LineShape::createFromInfo(const QString& info) {
     QStringList parts = info.split(" ");
     if (parts.size() == 5 && parts[0] == "Line") {
@@ -79,13 +79,11 @@ void LineShape::createFromInfo(const QString& info) {
     }
 }
 
+// --- RectShape ---
 void RectShape::show(QPainter &painter)
 {
-    if (isSelected) {
-        painter.setPen(QPen(Qt::blue, 2, Qt::SolidLine));
-    } else {
-        painter.setPen(QPen(Qt::black, 2, Qt::SolidLine));
-    }
+    QPen pen(isSelected ? Qt::blue : Qt::black, 2, Qt::SolidLine);
+    painter.setPen(pen);
     painter.setBrush(getBrush()); 
     
     int dx = std::abs(xs2 - xs1);
@@ -93,18 +91,18 @@ void RectShape::show(QPainter &painter)
     QRect previewRect(xs1 - dx, ys1 - dy, 2 * dx, 2 * dy);
     painter.drawRect(previewRect.normalized());
 }
+
 void RectShape::rubber(QPainter &painter)
 {
-    painter.setPen(QPen(Qt::red, 1, Qt::DashLine));
-    painter.setBrush(Qt::NoBrush);
-
-   
+    Shape::rubber(painter);
+    
     int dx = std::abs(xs2 - xs1);
     int dy = std::abs(ys2 - ys1);
     QRect previewRect(xs1 - dx, ys1 - dy, 2 * dx, 2 * dy);
 
     painter.drawRect(previewRect.normalized());
 }
+
 Shape *RectShape::clone() const { return new RectShape(*this); }
 
 QString RectShape::getCoordinates() const {
@@ -114,6 +112,7 @@ QString RectShape::getCoordinates() const {
 QString RectShape::getInfo() const {
     return QString("Rect %1 %2 %3 %4").arg(xs1).arg(ys1).arg(xs2).arg(ys2);
 }
+
 void RectShape::createFromInfo(const QString& info) {
     QStringList parts = info.split(" ");
     if (parts.size() == 5 && parts[0] == "Rect") {
@@ -124,25 +123,24 @@ void RectShape::createFromInfo(const QString& info) {
     }
 }
 
+// --- EllipseShape ---
 void EllipseShape::show(QPainter &painter)
 {
-    if (isSelected) {
-        painter.setPen(QPen(Qt::blue, 2, Qt::SolidLine));
-    } else {
-        painter.setPen(QPen(Qt::black, 2, Qt::SolidLine));
-    }
+    QPen pen(isSelected ? Qt::blue : Qt::black, 2, Qt::SolidLine);
+    painter.setPen(pen);
     painter.setBrush(Qt::NoBrush);
 
-    QRect previewRect(QPoint(xs1,ys1), QPoint(xs2,ys2));
+    QRect previewRect(QPoint(xs1, ys1), QPoint(xs2, ys2));
     painter.drawEllipse(previewRect.normalized());
 }
+
 void EllipseShape::rubber(QPainter &painter)
 {
-    painter.setPen(QPen(Qt::red, 1, Qt::DashLine));
-    painter.setBrush(Qt::NoBrush);
-    QRect previewRect(QPoint(xs1,ys1), QPoint(xs2,ys2));
+    Shape::rubber(painter);
+    QRect previewRect(QPoint(xs1, ys1), QPoint(xs2, ys2));
     painter.drawEllipse(previewRect.normalized());
 }
+
 Shape *EllipseShape::clone() const { return new EllipseShape(*this); }
 
 QString EllipseShape::getCoordinates() const {
@@ -152,6 +150,7 @@ QString EllipseShape::getCoordinates() const {
 QString EllipseShape::getInfo() const {
     return QString("Ellipse %1 %2 %3 %4").arg(xs1).arg(ys1).arg(xs2).arg(ys2);
 }
+
 void EllipseShape::createFromInfo(const QString& info) {
     QStringList parts = info.split(" ");
     if (parts.size() == 5 && parts[0] == "Ellipse") {
@@ -161,36 +160,32 @@ void EllipseShape::createFromInfo(const QString& info) {
         ys2 = parts[4].toLong();
     }
 }
+
+// --- LineDotsShape ---
 void LineDotsShape::show(QPainter &painter) {
     LineShape::show(painter);
-    int savedX1 = xs1, savedY1 = ys1, savedX2 = xs2, savedY2 = ys2;
 
+    int rx = 6, ry = 6;
+    EllipseShape dot1;
+    dot1.set(xs1 - rx, ys1 - ry, xs1 + rx, ys1 + ry);
+    dot1.show(painter);
 
-    int rx = 6;
-    int ry = 6;
-    EllipseShape::set(savedX1 -rx, savedY1 - ry, savedX1 + rx, savedY1 + ry);
-    EllipseShape::show(painter);
-
-    EllipseShape::set(savedX2 - rx, savedY2 - ry, savedX2 + rx, savedY2 + ry);
-    EllipseShape::show(painter);
-
-    LineShape::set(savedX1, savedY1, savedX2, savedY2);
+    EllipseShape dot2;
+    dot2.set(xs2 - rx, ys2 - ry, xs2 + rx, ys2 + ry);
+    dot2.show(painter);
 }
 
 void LineDotsShape::rubber(QPainter &painter) {
     LineShape::rubber(painter);
 
-    long savedX1 = xs1, savedY1 = ys1, savedX2 = xs2, savedY2 = ys2;
+    int rx = 6, ry = 6;
+    EllipseShape dot1;
+    dot1.set(xs1 - rx, ys1 - ry, xs1 + rx, ys1 + ry);
+    dot1.rubber(painter);
 
-    int rx = 6;
-    int ry = 6;
-    EllipseShape::set(savedX1 -rx, savedY1 - ry, savedX1 + rx, savedY1 + ry);
-    EllipseShape::show(painter);
-
-    EllipseShape::set(savedX2 - rx, savedY2 - ry, savedX2 + rx, savedY2 + ry);
-    EllipseShape::show(painter);
-
-    LineShape::set(savedX1, savedY1, savedX2, savedY2);
+    EllipseShape dot2;
+    dot2.set(xs2 - rx, ys2 - ry, xs2 + rx, ys2 + ry);
+    dot2.rubber(painter);
 }
 
 Shape *LineDotsShape::clone() const { return new LineDotsShape(*this); }
@@ -202,6 +197,7 @@ QString LineDotsShape::getCoordinates() const {
 QString LineDotsShape::getInfo() const {
     return QString("LineDots %1 %2 %3 %4").arg(xs1).arg(ys1).arg(xs2).arg(ys2);
 }
+
 void LineDotsShape::createFromInfo(const QString& info) {
     QStringList parts = info.split(" ");
     if (parts.size() == 5 && parts[0] == "LineDots") {
@@ -212,9 +208,9 @@ void LineDotsShape::createFromInfo(const QString& info) {
     }
 }
 
-
+// --- CubeShape ---
+// --- CubeShape ---
 void CubeShape::show(QPainter &painter) {
-
     long origX1 = xs1, origY1 = ys1, origX2 = xs2, origY2 = ys2;
 
     int dx = std::abs(origX2 - origX1);
@@ -313,6 +309,7 @@ QString CubeShape::getCoordinates() const {
 QString CubeShape::getInfo() const {
     return QString("Cube %1 %2 %3 %4").arg(xs1).arg(ys1).arg(xs2).arg(ys2);
 }
+
 void CubeShape::createFromInfo(const QString& info) {
     QStringList parts = info.split(" ");
     if (parts.size() == 5 && parts[0] == "Cube") {

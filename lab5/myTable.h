@@ -7,21 +7,23 @@
 
 class MyTableWindow : public QDialog {
     Q_OBJECT
-    private:
-        QTableWidget* tableWidget;
-        std::function<void(int)> onRowSelectedCallback;
-    public:
-        MyTableWindow(QWidget* parent = nullptr);
-        void updateTableData();
-        void setOnRowSelectedCallback(std::function<void(int)> callback) {
-            onRowSelectedCallback = callback;
-        };
-    protected:
-        void showEvent(QShowEvent* event) override;
-        void hideEvent(QHideEvent* event) override;
+
+private:
+    QTableWidget* tableWidget;
+    std::function<void(int)> onRowSelectedCallback;
+
+public:
+    explicit MyTableWindow(QWidget* parent = nullptr);
+    
+    void updateTableData();
+    
+    void setOnRowSelectedCallback(std::function<void(int)> callback) {
+        onRowSelectedCallback = callback;
+    }
+
+protected:
+    void showEvent(QShowEvent* event) override;
+    void hideEvent(QHideEvent* event) override;
 };
 
-
-
-
-#endif
+#endif // MYTABLE_H

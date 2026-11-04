@@ -6,80 +6,71 @@
 
 MyEditor* MyEditor::instance = nullptr;
 
-MyEditor::MyEditor(QWidget *parent) : QWidget(parent), shapeCount(0), currentShape(nullptr), isDragging(false)
-{};
-
+MyEditor::MyEditor(QWidget *parent) 
+    : QWidget(parent), shapeCount(0), currentShape(nullptr), isDragging(false)
+{
+}
 
 MyEditor::~MyEditor() {
     delete currentShape;
-    for (int i = 0; i < shapeCount; i++) {
-        delete pcshape[i];
-    }
-};
+    clearCanvas();
+}
 
 void MyEditor::setCurrentShape(Shape *shape) {
     delete currentShape;
     currentShape = shape;
 }
 
+Shape* MyEditor::createShapeByType(const QString &type) {
+    if (type == "Rect")      return new RectShape();
+    if (type == "Line")      return new LineShape();
+    if (type == "Ellipse")   return new EllipseShape();
+    if (type == "Point")     return new PointShape();
+    if (type == "LineDots")  return new LineDotsShape();
+    if (type == "Cube")      return new CubeShape();
+    return nullptr;
+}
+
 void MyEditor::saveToFile(const QString& filename) {
     QFile file(filename);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
         return;
-    }
+
     QTextStream out(&file);
     for (int i = 0; i < shapeCount; i++) {
         if (pcshape[i]) {
             out << pcshape[i]->getInfo() << '\n';
         }
     }
-    file.close();
 }
 
 void MyEditor::loadFromFile(const QString& filename) {
-    QFile file (filename);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
-    }
+
     clearCanvas();
     QTextStream in(&file);
-    while(!in.atEnd() && shapeCount < N) {
+    
+    while (!in.atEnd() && shapeCount < N) {
         QString line = in.readLine().trimmed();
-        if (line.isEmpty()) {
-            continue;
-        }
-        QStringList parts = line.split(' ');
-        QString type = parts[0];
+        if (line.isEmpty()) continue;
 
-        Shape* newShape = nullptr;
-        if (type == "Rect") {
-            newShape = new RectShape();
-        } else if (type == "Line") {
-            newShape = new LineShape();
-        } else if (type == "Ellipse") {
-            newShape = new EllipseShape();
-        } else if (type == "Point") {
-            newShape = new PointShape();
-        } else if (type == "LineDots") {
-            newShape = new LineDotsShape();
-        } else if (type == "Cube") {
-            newShape = new CubeShape();
-        }
+        QStringList parts = line.split(' ');
+        Shape* newShape = createShapeByType(parts[0]);
 
         if (newShape) {
             newShape->createFromInfo(line);
-            pcshape[shapeCount] = newShape;
-            shapeCount++;
+            pcshape[shapeCount++] = newShape;
         }
     }
-    file.close();
     redrawCanvas();
 }
 
 void MyEditor::selectShapeByIndex(int index) {
-    for (int i =0; i < shapeCount; i++) {
+    for (int i = 0; i < shapeCount; i++) {
         if (pcshape[i]) {
-            pcshape[i] -> setSelected(i == index);
+            pcshape[i]->setSelected(i == index);
         }
     }
     redrawCanvas();
@@ -99,7 +90,6 @@ void MyEditor::redrawCanvas() {
 
     {
         QPainter painter(&pixmap);
-
         for (int i = 0; i < shapeCount; i++) {
             if (pcshape[i]) {
                 pcshape[i]->show(painter);
@@ -115,20 +105,13 @@ void MyEditor::redrawCanvas() {
 }
 
 void MyEditor::mousePressEvent(QMouseEvent *event) {
-
-    if (event->button() == Qt::LeftButton && currentShape != nullptr)
-    {
-        if (shapeCount >= N)
-            return;
-
-        startPt = event->pos();
-        endPt = event->pos();
+    if (event->button() == Qt::LeftButton && currentShape && shapeCount < N) {
+        startPt = endPt = event->pos();
         isDragging = true;
 
-        if (typeid(*currentShape) == typeid(PointShape))
-        {
+        if (typeid(*currentShape) == typeid(PointShape)) {
             pcshape[shapeCount] = currentShape->clone();
-            pcshape[shapeCount]->set(event->pos().x(), event->pos().y(), event->pos().x(), event->pos().y());
+            pcshape[shapeCount]->set(startPt.x(), startPt.y(), startPt.x(), startPt.y());
             shapeCount++;
             isDragging = false;
             redrawCanvas();
@@ -136,24 +119,19 @@ void MyEditor::mousePressEvent(QMouseEvent *event) {
     }
 }
 
-void MyEditor::mouseMoveEvent(QMouseEvent *event)
-{
-    if (isDragging)
-    {
+void MyEditor::mouseMoveEvent(QMouseEvent *event) {
+    if (isDragging) {
         endPt = event->pos();
         update();
     }
 }
 
-void MyEditor::mouseReleaseEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::LeftButton && isDragging)
-    {
+void MyEditor::mouseReleaseEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton && isDragging) {
         isDragging = false;
         endPt = event->pos();
 
-        if (currentShape && shapeCount < N)
-        {
+        if (currentShape && shapeCount < N) {
             pcshape[shapeCount] = currentShape->clone();
             pcshape[shapeCount]->set(startPt.x(), startPt.y(), endPt.x(), endPt.y());
             shapeCount++;
@@ -162,23 +140,19 @@ void MyEditor::mouseReleaseEvent(QMouseEvent *event)
     }
 }
 
-void MyEditor::resizeEvent(QResizeEvent *event)
-{
+void MyEditor::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
     pixmap = QPixmap(size());
     redrawCanvas();
 }
 
-
-void MyEditor::paintEvent(QPaintEvent *event)
-{
+void MyEditor::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
     QPainter painter(this);
     
     painter.drawPixmap(0, 0, pixmap);
 
-    if (isDragging && currentShape)
-    {
+    if (isDragging && currentShape) {
         currentShape->set(startPt.x(), startPt.y(), endPt.x(), endPt.y());
         currentShape->rubber(painter);
     }

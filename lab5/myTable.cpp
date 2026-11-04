@@ -16,25 +16,18 @@ MyTableWindow::MyTableWindow(QWidget *parent) : QDialog(parent) {
     tableWidget->horizontalHeader()->setStretchLastSection(true);
     
     layout->addWidget(tableWidget);
+
     connect(tableWidget, &QTableWidget::itemSelectionChanged, this, [this]() {
+        if (!onRowSelectedCallback) return;
+
         QList<QTableWidgetItem*> selectedItems = tableWidget->selectedItems();
-        if (selectedItems.isEmpty()) {
-            if (onRowSelectedCallback) {
-                onRowSelectedCallback(-1);
-            }
-        } else {
-            int row = tableWidget->row(selectedItems.first());
-            if (onRowSelectedCallback) {
-                onRowSelectedCallback(row);
-            }
-        }
+        int row = selectedItems.isEmpty() ? -1 : tableWidget->row(selectedItems.first());
+        onRowSelectedCallback(row);
     });
 }
 
-
 void MyTableWindow::updateTableData() {
     MyEditor *editor = MyEditor::getInstance();
-
     if (!editor) {
         tableWidget->setRowCount(0);
         return;
@@ -49,21 +42,11 @@ void MyTableWindow::updateTableData() {
     for (int i = 0; i < count; ++i) {
         Shape *shape = editor->getShape(i);
 
-        tableWidget->setItem(
-            i, 0,
-            new QTableWidgetItem(QString::number(i + 1))
-        );
+        tableWidget->setItem(i, 0, new QTableWidgetItem(QString::number(i + 1)));
 
         if (shape) {
-            tableWidget->setItem(
-                i, 1,
-                new QTableWidgetItem(shape->getShapeName())
-            );
-
-            tableWidget->setItem(
-                i, 2,
-                new QTableWidgetItem(shape->getCoordinates())
-            );
+            tableWidget->setItem(i, 1, new QTableWidgetItem(shape->getShapeName()));
+            tableWidget->setItem(i, 2, new QTableWidgetItem(shape->getCoordinates()));
         }
     }
     tableWidget->blockSignals(false);
@@ -73,10 +56,9 @@ void MyTableWindow::showEvent(QShowEvent *event) {
     QDialog::showEvent(event);
     updateTableData();
 
-
-    QList<QTableWidgetItem*> selectedItems = tableWidget->selectedItems();
-    if (!selectedItems.isEmpty() && onRowSelectedCallback) {
-        int row = tableWidget->row(selectedItems.first());
+    if (onRowSelectedCallback) {
+        QList<QTableWidgetItem*> selectedItems = tableWidget->selectedItems();
+        int row = selectedItems.isEmpty() ? -1 : tableWidget->row(selectedItems.first());
         onRowSelectedCallback(row);
     }
 }
