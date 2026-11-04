@@ -45,7 +45,7 @@ void RectShape::show(QPainter &painter)
 {
     painter.setPen(QPen(Qt::black, 2, Qt::SolidLine));
     painter.setBrush(getBrush()); 
-    //changes
+    
     int dx = std::abs(xs2 - xs1);
     int dy = std::abs(ys2 - ys1);
     QRect previewRect(xs1 - dx, ys1 - dy, 2 * dx, 2 * dy);
@@ -56,7 +56,7 @@ void RectShape::rubber(QPainter &painter)
     painter.setPen(QPen(Qt::red, 1, Qt::DashLine));
     painter.setBrush(Qt::NoBrush);
 
-    //changes
+   
     int dx = std::abs(xs2 - xs1);
     int dy = std::abs(ys2 - ys1);
     QRect previewRect(xs1 - dx, ys1 - dy, 2 * dx, 2 * dy);
@@ -82,14 +82,6 @@ void EllipseShape::rubber(QPainter &painter)
 }
 Shape *EllipseShape::clone() const { return new EllipseShape(*this); }
 
-
-LineDotsShape::LineDotsShape() : LineShape(), EllipseShape() {}
-LineDotsShape::LineDotsShape(const LineDotsShape &other): Shape(other), LineShape(other), EllipseShape(other) {}
-
-void LineDotsShape::set(long x1, long y1, long x2, long y2) {
-    LineShape::set(x1, y1, x2, y2);
-    EllipseShape::set(x1, y1, x2, y2);
-}
 
 void LineDotsShape::show(QPainter &painter) {
     LineShape::show(painter);
@@ -126,14 +118,6 @@ void LineDotsShape::rubber(QPainter &painter) {
 Shape *LineDotsShape::clone() const { return new LineDotsShape(*this); }
 
 
-
-CubeShape::CubeShape() : RectShape(), LineShape() {}
-CubeShape::CubeShape(const CubeShape &other) : Shape(other), RectShape(other), LineShape(other) {}
-
-void CubeShape::set(long x1, long y1, long x2, long y2) {
-    RectShape::set(x1, y1, x2, y2);
-    LineShape::set(x1, y1, x2, y2);
-}
 
 void CubeShape::show(QPainter &painter) {
 

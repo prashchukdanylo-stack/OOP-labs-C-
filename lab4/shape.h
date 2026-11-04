@@ -65,10 +65,6 @@ public:
 
 class LineDotsShape : public LineShape, public EllipseShape {
     public:
-
-    LineDotsShape();
-    LineDotsShape(const LineDotsShape &other);
-        void set(long x1, long y1, long x2, long y2) override;
         void show(QPainter &painter) override;
         void rubber(QPainter &painter);
         Shape* clone() const override;
@@ -77,9 +73,7 @@ class LineDotsShape : public LineShape, public EllipseShape {
 
 class CubeShape : public LineShape, public RectShape {
     public:
-        CubeShape();
-    CubeShape(const CubeShape &other);
-        void set(long x1, long y1, long x2, long y2) override;
+    
         void show(QPainter &painter) override;
         void rubber(QPainter &painter);
         Shape* clone() const override;
