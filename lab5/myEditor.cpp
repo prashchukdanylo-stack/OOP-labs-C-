@@ -76,6 +76,27 @@ void MyEditor::selectShapeByIndex(int index) {
     redrawCanvas();
 }
 
+void MyEditor::deleteShapeByIndex(int index) {
+    if (index < 0 || index >= shapeCount) {
+        return;
+    }
+    delete pcshape[index];
+    
+    for (int i = index; i < shapeCount - 1; ++i) {
+        pcshape[i] = pcshape[i + 1];
+    }
+    
+    pcshape[shapeCount - 1] = nullptr;
+    shapeCount--;
+
+    selectShapeByIndex(-1);
+    redrawCanvas();
+    
+    if (onShapesChangedCallback) {
+        onShapesChangedCallback();
+    }
+}
+
 void MyEditor::clearCanvas() {
     for (int i = 0; i < shapeCount; i++) {
         delete pcshape[i];

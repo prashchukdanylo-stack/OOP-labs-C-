@@ -59,10 +59,10 @@ public:
     void saveToFile(const QString& filename);
     void loadFromFile(const QString& filename);
     void selectShapeByIndex(int index);
-
     void setOnShapesChangedCallback(std::function<void()> callback) {
         onShapesChangedCallback = callback;
     }
+    void deleteShapeByIndex(int index);
 
 protected:
     void paintEvent(QPaintEvent *event) override;

@@ -1,8 +1,8 @@
 #include "myTable.h"
-#include "myEditor.h"
 #include <QHeaderView>
 #include <QTableWidget>
 #include <QVBoxLayout>
+#include <QPushButton>
 
 MyTableWindow::MyTableWindow(QWidget *parent) : QDialog(parent) {
     setWindowTitle("Таблиця об'єктів");
@@ -17,6 +17,20 @@ MyTableWindow::MyTableWindow(QWidget *parent) : QDialog(parent) {
     
     layout->addWidget(tableWidget);
 
+    QVBoxLayout *buttonLayout = new QVBoxLayout();
+    deleteButton = new QPushButton("Видалити", this);
+    buttonLayout->addWidget(deleteButton);
+
+    layout->addLayout(buttonLayout);
+    connect(deleteButton, &QPushButton::clicked, this, [this](){
+        if (!onDeleteRowCallback) return;
+        int row = tableWidget->currentRow();
+        if (row >= 0) {
+            onDeleteRowCallback(row);
+        }
+
+    });
+
     connect(tableWidget, &QTableWidget::itemSelectionChanged, this, [this]() {
         if (!onRowSelectedCallback) return;
 
@@ -27,27 +41,25 @@ MyTableWindow::MyTableWindow(QWidget *parent) : QDialog(parent) {
 }
 
 void MyTableWindow::updateTableData() {
-    MyEditor *editor = MyEditor::getInstance();
-    if (!editor) {
+    if (!getCountCallback || !getDataCallback) {
         tableWidget->setRowCount(0);
         return;
     }
 
     tableWidget->blockSignals(true);
-    int count = editor->getShapeCount();
+    int count = getCountCallback();
 
     tableWidget->clearSelection();
     tableWidget->setRowCount(count);
 
     for (int i = 0; i < count; ++i) {
-        Shape *shape = editor->getShape(i);
+        QString name, coords;
+        getDataCallback(i, name, coords);
 
         tableWidget->setItem(i, 0, new QTableWidgetItem(QString::number(i + 1)));
 
-        if (shape) {
-            tableWidget->setItem(i, 1, new QTableWidgetItem(shape->getShapeName()));
-            tableWidget->setItem(i, 2, new QTableWidgetItem(shape->getCoordinates()));
-        }
+            tableWidget->setItem(i, 1, new QTableWidgetItem(name));
+            tableWidget->setItem(i, 2, new QTableWidgetItem(coords));
     }
     tableWidget->blockSignals(false);
 }
@@ -65,5 +77,7 @@ void MyTableWindow::showEvent(QShowEvent *event) {
 
 void MyTableWindow::hideEvent(QHideEvent *event) {
     QDialog::hideEvent(event);
-    MyEditor::getInstance()->selectShapeByIndex(-1);
+    if (onHiddenCallback) {
+        onHiddenCallback();
+    }
 }

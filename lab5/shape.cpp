@@ -19,7 +19,7 @@ void Shape::rubber(QPainter &painter)
     painter.setBrush(Qt::NoBrush);
 }
 
-// --- PointShape ---
+
 void PointShape::show(QPainter &painter)
 {   
     QPen pen(isSelected ? Qt::blue : Qt::black, 6, Qt::SolidLine, Qt::RoundCap);
@@ -45,7 +45,6 @@ void PointShape::createFromInfo(const QString& info) {
     }
 }
 
-// --- LineShape ---
 void LineShape::show(QPainter &painter)
 {
     QPen pen(isSelected ? Qt::blue : Qt::black, 2, Qt::SolidLine);
@@ -79,7 +78,7 @@ void LineShape::createFromInfo(const QString& info) {
     }
 }
 
-// --- RectShape ---
+
 void RectShape::show(QPainter &painter)
 {
     QPen pen(isSelected ? Qt::blue : Qt::black, 2, Qt::SolidLine);
@@ -123,7 +122,6 @@ void RectShape::createFromInfo(const QString& info) {
     }
 }
 
-// --- EllipseShape ---
 void EllipseShape::show(QPainter &painter)
 {
     QPen pen(isSelected ? Qt::blue : Qt::black, 2, Qt::SolidLine);
@@ -161,7 +159,7 @@ void EllipseShape::createFromInfo(const QString& info) {
     }
 }
 
-// --- LineDotsShape ---
+
 void LineDotsShape::show(QPainter &painter) {
     LineShape::show(painter);
 
@@ -208,8 +206,7 @@ void LineDotsShape::createFromInfo(const QString& info) {
     }
 }
 
-// --- CubeShape ---
-// --- CubeShape ---
+
 void CubeShape::show(QPainter &painter) {
     long origX1 = xs1, origY1 = ys1, origX2 = xs2, origY2 = ys2;
 
