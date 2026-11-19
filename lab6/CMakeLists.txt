@@ -11,7 +11,7 @@ set(CMAKE_AUTOUIC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
-# 1. Головна програма-менеджер Lab6
+
 add_executable(
     Lab6
     Lab6.cpp
@@ -22,16 +22,16 @@ add_executable(
 )
 target_link_libraries(Lab6 PRIVATE Qt6::Widgets)
 
-# 2. Програма генерації даних Object2
+
 add_executable(
     Object2
     Object2.cpp
     Object2Window.cpp
     Object2Window.h
+    StdinReader.h
 )
 target_link_libraries(Object2 PRIVATE Qt6::Widgets)
 
-# 3. Програма побудови графіка Object3
 add_executable(
     Object3
     Object3.cpp

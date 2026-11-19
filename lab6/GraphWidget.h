@@ -14,7 +14,10 @@ class GraphWidget : public QWidget {
 
 public:
     GraphWidget(const QVector<Point> &data, QWidget *parent = nullptr);
+    void setPoints(const QVector<Point> &points);
 
+    
 protected:
     void paintEvent(QPaintEvent *event) override;
+    
 };

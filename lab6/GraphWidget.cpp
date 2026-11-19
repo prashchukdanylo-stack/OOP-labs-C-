@@ -40,8 +40,8 @@ void GraphWidget::paintEvent(QPaintEvent *event) {
     double plotHeight = h - 2 * margin;
 
     painter.setPen(QPen(Qt::black, 2));
-    painter.drawLine(margin, margin, margin, h - margin);         // Вісь Y
-    painter.drawLine(margin, h - margin, w - margin, h - margin); // Вісь X
+    painter.drawLine(margin, margin, margin, h - margin);         
+    painter.drawLine(margin, h - margin, w - margin, h - margin); 
 
     painter.drawText(w - margin + 10, h - margin + 5, "X");
     painter.drawText(margin - 10, margin - 10, "Y");
@@ -58,10 +58,15 @@ void GraphWidget::paintEvent(QPaintEvent *event) {
         painter.setPen(Qt::darkGray);
         painter.drawText(xCoord - 12, h - margin + 18, QString::number(p.x));
         painter.drawText(margin - 38, yCoord + 4, QString::number(p.y));
-        painter.setPen(QPen(Qt::blue, 2));
     }
-
+    painter.setPen(QPen(Qt::blue, 2));
+    
     for (int i = 0; i < screenPoints.size() - 1; ++i) {
         painter.drawLine(screenPoints[i], screenPoints[i + 1]);
     }
+}
+
+void GraphWidget::setPoints(const QVector<Point> &points) {
+    pointsData = points; 
+    update();         
 }

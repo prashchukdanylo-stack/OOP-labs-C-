@@ -38,28 +38,23 @@ void MainWindow::onStartWorkflow() {
     SettingsDialog dlg(this);
     if (dlg.exec() != QDialog::Accepted) return;
 
+    if (procObject2->state() == QProcess::NotRunning) {
+        procObject2->start("./Object2");
+    }
+    if (procObject3->state() == QProcess::NotRunning) {
+        procObject3->start("./Object3");
+    }
+
     int nPoint = dlg.spinNPoint->value();
     int xMin = dlg.spinXMin->value();
     int xMax = dlg.spinXMax->value();
     int yMin = dlg.spinYMin->value();
     int yMax = dlg.spinYMax->value();
 
-    QStringList args2;
-    args2 << QString::number(nPoint) 
-          << QString::number(xMin) << QString::number(xMax) 
-          << QString::number(yMin) << QString::number(yMax);
+    QByteArray args = QString("%1 %2 %3 %4 %5\n").arg(nPoint).arg(xMin).arg(xMax).arg(yMin).arg(yMax).toUtf8();
 
     if (procObject2->state() == QProcess::Running) {
-        procObject2->terminate();
-        procObject2->waitForFinished(500);
+        procObject2->write(args);
     }
-    procObject2->start("./Object2", args2);
 
-    QThread::msleep(400);
-
-    if (procObject3->state() == QProcess::Running) {
-        procObject3->terminate();
-        procObject3->waitForFinished(500);
-    }
-    procObject3->start("./Object3");
 }
